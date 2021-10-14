@@ -2,6 +2,7 @@ package it.mybatis;
 
 import it.mybatis.dto.Person;
 import it.mybatis.service.PersonService;
+import it.mybatis.service.SP_PersonService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +14,7 @@ public class MyBatisMain {
     private static final String EMPTY_STRING = "";
     private static Mapper mapper = new Mapper();
     private static PersonService service = new PersonService();
+    private static SP_PersonService spService = new SP_PersonService();
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -85,8 +87,8 @@ public class MyBatisMain {
 
         Person newPerson = mapper.mapPersonByClearFields(firstname, lastname, email);
 
-        service.insertPerson(newPerson);
-
+        // service.insertPerson(newPerson);
+        spService.insertPerson(newPerson); // Stored Procedure
     }
 
     public static void updatePerson(BufferedReader reader) throws IOException, ClassNotFoundException {
@@ -107,7 +109,8 @@ public class MyBatisMain {
 
             Person updatedPerson = mapper.mapPersonWithOldPerson(firstname, lastname, email, oldPerson);
 
-            service.updatePerson(updatedPerson);
+            // service.updatePerson(updatedPerson);
+            spService.updatePerson(updatedPerson); // Stored Procedure
         } else {
             System.out.println("\nNo person found with the mail entered!");
         }
@@ -139,7 +142,8 @@ public class MyBatisMain {
             System.out.println("Enter Y or N(any other key): ");
             String check = reader.readLine();
             if (!EMPTY_STRING.equals(check) && "y".equals(check.toLowerCase())) {
-                service.deletePerson(personToDelete.getIdPerson());
+                // service.deletePerson(personToDelete.getIdPerson());
+                spService.deletePerson(personToDelete.getIdPerson()); // Stored Procedure
             } else {
                 System.out.println("\nAction stopped!");
             }

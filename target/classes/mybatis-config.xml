@@ -17,5 +17,6 @@
     </environments>
     <mappers>
         <mapper resource="PersonMapper.xml"/>
+        <mapper resource="SP_PersonMapper.xml"/>
     </mappers>
 </configuration>

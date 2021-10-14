@@ -57,7 +57,6 @@ public class PersonService {
             mapper.deletePerson(idPerson);
             sqlSession.commit();
         }
-
     }
 
     public Person checkExistPersonByMail(String email) {

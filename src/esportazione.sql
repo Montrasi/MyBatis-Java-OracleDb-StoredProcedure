@@ -77,11 +77,11 @@ AS
 END;
 
 
-create or replace PROCEDURE DELETE_PERSON(
-    myemail VARCHAR2
+create or replace PROCEDURE DELETE_PERSON_BY_ID(
+    myid VARCHAR2
 )
 AS
     BEGIN
         DELETE PERSON p
-        WHERE p.email = myemail;
+        WHERE p.person_id = myid;
 END;
