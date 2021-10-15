@@ -1,18 +1,20 @@
 package it.mybatis.dto;
 
-public class Person {
+import java.io.Serializable;
 
-    private Long idPerson;
+public class Employee implements Serializable {
+
+    private Long employeeId;
     private String firstname;
     private String lastname;
     private String email;
 
-    public Long getIdPerson() {
-        return idPerson;
+    public Long getEmployeeId() {
+        return employeeId;
     }
 
-    public void setIdPerson(Long idPerson) {
-        this.idPerson = idPerson;
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getFirstname() {
@@ -38,4 +40,5 @@ public class Person {
     public void setEmail(String email) {
         this.email = email;
     }
+
 }

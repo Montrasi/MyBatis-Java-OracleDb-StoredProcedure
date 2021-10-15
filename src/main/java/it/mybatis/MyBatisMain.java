@@ -1,22 +1,29 @@
 package it.mybatis;
 
-import it.mybatis.dto.Person;
-import it.mybatis.service.PersonService;
-import it.mybatis.service.SP_PersonService;
+import it.mybatis.manager.CompanyManager;
+import it.mybatis.manager.ContractManager;
+import it.mybatis.manager.EmployeeManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class MyBatisMain {
 
     private static final String EMPTY_STRING = "";
-    private static Mapper mapper = new Mapper();
-    private static PersonService service = new PersonService();
-    private static SP_PersonService spService = new SP_PersonService();
+    public static final String ANSI_RED = "\u001B[31m";
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    private static Mapper mapper = new Mapper();
+    private static EmployeeManager empManager = new EmployeeManager();
+    private static CompanyManager cmpManager = new CompanyManager();
+    private static ContractManager cntManager = new ContractManager();
+
+    private static SimpleDateFormat simpleDate = new SimpleDateFormat("dd-MM-yyyy");
+
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, ParseException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String action = EMPTY_STRING;
 
@@ -25,16 +32,16 @@ public class MyBatisMain {
 
             switch (action) {
                 case "1":
-                    getAllPerson();
+                    getInfo(reader);
                     break;
                 case "2":
-                    saveNewPerson(reader);
+                    saveNewInfo(reader);
                     break;
                 case "3":
-                    updatePerson(reader);
+                    updateInfo(reader);
                     break;
                 case "4":
-                    deletePersonById(reader);
+                    deleteInfo(reader);
                     break;
                 default:
                     if (!"q".equals(action)) {
@@ -47,108 +54,103 @@ public class MyBatisMain {
 
     public static String getActionToTake(BufferedReader reader) throws IOException {
 
-        System.out.println("\n\n\n\n\nWitch action do you want take?");
+        System.out.println("\n\n\n\n\nWitch action do you want take? (Enter 'Q' to exit)");
         System.out.println("1 - Read data");
-        System.out.println("2 - Add new person");
+        System.out.println("2 - Add Data");
         System.out.println("3 - Update person");
         System.out.println("4 - Delete person");
         return reader.readLine();
     }
 
-    private static void getAllPerson() {
+    private static void getInfo(BufferedReader reader) throws IOException {
+        String chose = getSubjectOfAction(reader);
 
-        List<Person> list = service.getPersons();
-
-        if (list != null && !list.isEmpty()) {
-            String leftAlignFormat = "| %-5s | %-12s | %-14s | %-23s |%n";
-
-            System.out.format("+-------+--------------+----------------+-------------------------+%n");
-            System.out.format("| ID    | FIRSTNAME    | LASTNAME       | EMAIL                   |%n");
-            System.out.format("+-------+--------------+----------------+-------------------------+%n");
-            for (Person person : list) {
-                System.out.format(leftAlignFormat, person.getIdPerson(), person.getFirstname(), person.getLastname(), person.getEmail());
+        if (chose != null) {
+            switch (chose) {
+                case "1":
+                    cmpManager.getCompanies();
+                    break;
+                case "2":
+                    empManager.getEmployees();
+                    break;
+                case "3":
+                    cntManager.getContracts();
+                    break;
             }
-            System.out.format("+-------+--------------+----------------+-------------------------+%n");
-        } else {
-            System.out.println("No persons registered!");
         }
-
     }
 
-    public static void saveNewPerson(BufferedReader reader) throws IOException {
-        String firstname = EMPTY_STRING, lastname = EMPTY_STRING, email = EMPTY_STRING;
+    private static String getSubjectOfAction(BufferedReader reader) throws IOException {
 
-        System.out.println("\n\nEnter your firstname");
-        firstname = reader.readLine();
-        System.out.println("\nEnter your lastname");
-        lastname = reader.readLine();
-        System.out.println("\nEnter your email");
-        email = reader.readLine();
+        System.out.println("\nWhat do you want see?");
+        System.out.println("1 - Company");
+        System.out.println("2 - Employee");
+        System.out.println("3 - Company, Contract, Employee");
+        String chose = reader.readLine();
 
-        Person newPerson = mapper.mapPersonByClearFields(firstname, lastname, email);
-
-        // service.insertPerson(newPerson);
-        spService.insertPerson(newPerson); // Stored Procedure
-    }
-
-    public static void updatePerson(BufferedReader reader) throws IOException, ClassNotFoundException {
-
-        System.out.println("\n\nWitch user do you want update?");
-        Person oldPerson = searchPersonByMail(reader);
-
-        if (oldPerson != null) {
-            String firstname = EMPTY_STRING, lastname = EMPTY_STRING, email = EMPTY_STRING;
-
-            System.out.println("\n\nHint: If you want keep the current value, press space!");
-            System.out.println("\nEnter new firstname (old: " + oldPerson.getFirstname() + ") ");
-            firstname = reader.readLine();
-            System.out.println("\nEnter new lastname (old: " + oldPerson.getLastname() + ") ");
-            lastname = reader.readLine();
-            System.out.println("\nEnter new email (old: " + oldPerson.getEmail() + ") ");
-            email = reader.readLine();
-
-            Person updatedPerson = mapper.mapPersonWithOldPerson(firstname, lastname, email, oldPerson);
-
-            // service.updatePerson(updatedPerson);
-            spService.updatePerson(updatedPerson); // Stored Procedure
+        if (!EMPTY_STRING.equals(chose)) {
+            return chose;
         } else {
-            System.out.println("\nNo person found with the mail entered!");
-        }
-
-    }
-
-    public static Person searchPersonByMail(BufferedReader reader) throws IOException, ClassNotFoundException {
-        System.out.println("Enter email");
-        String email = reader.readLine();
-
-        if (!EMPTY_STRING.equals(email)) {
-            email = "%" + email + "%";
-            Person oldPerson = service.checkExistPersonByMail(email);
-            if (oldPerson != null) {
-                return oldPerson;
-            }
-        } else {
-            System.out.println("\nNo mail entered!");
+            System.out.println("No chose took!");
         }
         return null;
     }
 
-    public static void deletePersonById(BufferedReader reader) throws IOException, ClassNotFoundException {
-        System.out.println("\n\nWitch user do you want delete?");
-        Person personToDelete = searchPersonByMail(reader);
+    /* -------------------------------- SAVE -------------------------------- */
+    private static void saveNewInfo(BufferedReader reader) throws IOException, ParseException {
+        String chose = getSubjectOfAction(reader);
 
-        if (personToDelete != null) {
-            System.out.println("\n\nAre you sure you want to delete the user?");
-            System.out.println("Enter Y or N(any other key): ");
-            String check = reader.readLine();
-            if (!EMPTY_STRING.equals(check) && "y".equals(check.toLowerCase())) {
-                // service.deletePerson(personToDelete.getIdPerson());
-                spService.deletePerson(personToDelete.getIdPerson()); // Stored Procedure
-            } else {
-                System.out.println("\nAction stopped!");
+        if (chose != null) {
+            switch (chose) {
+                case "1":
+                    cmpManager.saveCompany(reader);
+                    break;
+                case "2":
+                    empManager.saveEmployee(reader);
+                    break;
+                case "3":
+                    cntManager.saveContract(reader);
+                    break;
             }
-        } else {
-            System.out.println("\nUser doesn't exist!");
         }
     }
+
+    /* -------------------------------- UPDATE -------------------------------- */
+    private static void updateInfo(BufferedReader reader) throws IOException, ParseException {
+        String chose = getSubjectOfAction(reader);
+
+        if (chose != null) {
+            switch (chose) {
+                case "1":
+                    cmpManager.updateCompany(reader);
+                    break;
+                case "2":
+                    empManager.updateEmployee(reader);
+                    break;
+                case "3":
+                    cntManager.updateContract(reader);
+                    break;
+            }
+        }
+    }
+
+    /* -------------------------------- DELETE -------------------------------- */
+    private static void deleteInfo(BufferedReader reader) throws IOException {
+        String chose = getSubjectOfAction(reader);
+
+        if (chose != null) {
+            switch (chose) {
+                case "1":
+                    cmpManager.deleteCompanyById(reader);
+                    break;
+                case "2":
+                    empManager.deleteEmployeeById(reader);
+                    break;
+                case "3":
+                    cntManager.deleteContractById(reader);
+                    break;
+            }
+        }
+    }
+
 }

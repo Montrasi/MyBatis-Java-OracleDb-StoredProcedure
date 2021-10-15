@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="it.mybatis.mapper.ContractMapper">
+
+    <resultMap type="Contract" id="ContractResult">
+        <id property="contractId" column="contract_id"/>
+        <result property="hireDate" column="hire_date" jdbcType="DATE"/>
+        <result property="firingDate" column="firing_date" jdbcType="DATE"/>
+        <association property="company" column="company_id" javaType="Company">
+            <id property="companyId" column="company_id"/>
+            <result property="name" column="name"/>
+        </association>
+        <association property="employee" column="employee_id" javaType="Employee">
+            <id property="employeeId" column="employee_id"/>
+            <result property="firstname" column="first_name"/>
+            <result property="lastname" column="last_name"/>
+            <result property="email" column="email"/>
+        </association>
+    </resultMap>
+
+    <select id="getContracts" resultMap="ContractResult">
+        SELECT * FROM
+        CONTRACT cnt
+        JOIN COMPANY cmp ON cmp.company_id = cnt.company_id
+        JOIN EMPLOYEE emp ON emp.employee_id = cnt.employee_id
+    </select>
+
+    <insert id="saveContract" statementType="CALLABLE" parameterType="it.mybatis.dto.Contract" useGeneratedKeys="false">
+        {CALL SP_SAVE_NEW_CONTRACT(#{company.idCompany},
+        #{employee.idEmployee},
+        #{hireDate, jdbcType=DATE},
+        #{firingDate, jdbcType=DATE})}
+    </insert>
+
+    <select id="checkEmployeeWork" parameterType="Long" resultType="String">
+        SELECT emp.last_name
+        FROM CONTRACT cnt
+        JOIN EMPLOYEE emp ON emp.employee_id = cnt.employee_id
+        WHERE cnt.employee_id = #{employeeId}
+    </select>
+
+    <select id="getContractById" parameterType="Long" resultMap="ContractResult">
+        SELECT * FROM CONTRACT WHERE contract_id = #{contractId}
+    </select>
+
+    <update id="updateContract" statementType="CALLABLE" parameterType="it.mybatis.dto.Contract">
+        {CALL SP_UPDATE_CONTRACT(#{contractId}, #{firingDate})}
+    </update>
+
+    <delete id="deleteContractById" statementType="CALLABLE" parameterType="Long">
+        {CALL SP_DELETE_CONTRACT(#{contractId})}
+    </delete>
+
+    <update id="orderContractId" statementType="CALLABLE" parameterType="Long">
+        {CALL SP_ORDER_CONTRACT_IDS(#{contractId})}
+    </update>
+</mapper>

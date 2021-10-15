@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="it.mybatis.mapper.CompanyMapper">
+
+    <resultMap type="Company" id="CompanyResult">
+        <id property="companyId" column="company_id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <select id="getCompanies" resultMap="CompanyResult">
+        SELECT * FROM COMPANY
+    </select>
+
+    <insert id="saveCompany" statementType="CALLABLE" parameterType="it.mybatis.dto.Company" useGeneratedKeys="false">
+        {CALL SP_SAVE_NEW_COMPANY(#{name})}
+    </insert>
+
+    <select id="getCompanyById" parameterType="Long" resultType="it.mybatis.dto.Company">
+        SELECT * FROM COMPANY WHERE company_id = #{companyId}
+    </select>
+
+    <update id="updateCompany" statementType="CALLABLE" parameterType="it.mybatis.dto.Company">
+        {CALL SP_UPDATE_COMPANY(#{companyId}, #{name})}
+    </update>
+
+    <delete id="deleteCompanyById" statementType="CALLABLE" parameterType="Long">
+        {CALL SP_DELETE_COMPANY(#{companyId})}
+    </delete>
+
+    <update id="orderCompanyId" statementType="CALLABLE" parameterType="Long">
+        {CALL SP_ORDER_COMPANY_IDS(#{companyId})}
+    </update>
+
+</mapper>

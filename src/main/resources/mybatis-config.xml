@@ -2,7 +2,9 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-        <typeAlias type="it.mybatis.dto.Person" alias="Person"/>
+        <typeAlias type="it.mybatis.dto.Contract" alias="Contract"/>
+        <typeAlias type="it.mybatis.dto.Company" alias="Company"/>
+        <typeAlias type="it.mybatis.dto.Employee" alias="Employee"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">
@@ -16,7 +18,8 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="PersonMapper.xml"/>
-        <mapper resource="SP_PersonMapper.xml"/>
+        <mapper resource="CompanyMapper.xml"/>
+        <mapper resource="EmployeeMapper.xml"/>
+        <mapper resource="ContractMapper.xml"/>
     </mappers>
 </configuration>

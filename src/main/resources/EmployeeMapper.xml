@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="it.mybatis.mapper.EmployeeMapper">
+
+    <resultMap type="Employee" id="EmployeeResult">
+        <id property="employeeId" column="employee_id"/>
+        <result property="firstname" column="first_name"/>
+        <result property="lastname" column="last_name"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <select id="getEmployees" resultMap="EmployeeResult">
+        SELECT * FROM EMPLOYEE
+    </select>
+
+    <insert id="saveEmployee" statementType="CALLABLE" parameterType="it.mybatis.dto.Employee" useGeneratedKeys="false">
+        {CALL SP_SAVE_NEW_EMPLOYEE(#{firstname}, #{lastname}, #{email})}
+    </insert>
+
+    <select id="getEmployeeById" parameterType="Long" resultMap="EmployeeResult">
+        SELECT * FROM EMPLOYEE WHERE employee_id = #{employeeId}
+    </select>
+
+    <update id="updateEmployee" statementType="CALLABLE" parameterType="it.mybatis.dto.Employee">
+        {CALL SP_UPDATE_EMPLOYEE(#{employeeId}, #{firstname}, #{lastname}, #{email})}
+    </update>
+
+    <delete id="deleteEmployeeById" statementType="CALLABLE" parameterType="Long">
+        {CALL SP_DELETE_EMPLOYEE(#{employeeId})}
+    </delete>
+
+    <update id="orderEmployeeId" statementType="CALLABLE" parameterType="Long">
+        {CALL SP_ORDER_EMPLOYEE_IDS(#{employeeId)}
+    </update>
+
+</mapper>
